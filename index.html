@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7">
+<title>Abdos Tracker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f2f7;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
+main{max-width:520px;margin:auto;padding:24px 18px 40px}
+h1{font-size:34px;margin:4px 0 4px} .muted{color:#6d6d72}.eyebrow{font-size:12px;font-weight:700;color:#777;letter-spacing:.08em}
+.card{background:white;border-radius:22px;padding:20px;margin-top:16px;box-shadow:0 2px 10px #0000000b}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.progress{height:9px;background:#e8e8ed;border-radius:20px;overflow:hidden;margin-top:12px}.bar{height:100%;background:#007aff;border-radius:20px;width:0}
+.current{text-align:center;padding:28px 18px}.day{font-size:14px;font-weight:700;color:#777}.workout{font-size:42px;font-weight:800;margin:10px 0 6px}.desc{color:#777}
+button{width:100%;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:700;background:#007aff;color:white;margin-top:20px}button.secondary{background:#e9e9ee;color:#111}
+.list{margin-top:18px}.item{display:flex;align-items:center;gap:10px;padding:9px 2px}.icon{width:22px;text-align:center}.done{color:#34c759}.next{color:#007aff}.future{color:#999}
+.badge{font-size:10px;font-weight:800;color:#007aff}.small{font-size:12px}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Abdos">
+</head>
+<body>
+<main>
+<div class="eyebrow">PROGRAMME ABDOS</div><h1>Abdos Tracker</h1>
+<div class="muted">Fais simplement la prochaine étape.</div>
+
+<section class="card">
+<div class="row"><b id="count">0 / 35 séances</b><b id="pct">0 %</b></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+</section>
+
+<section class="card current">
+<div class="day" id="day">JOUR 1</div>
+<div class="workout" id="workout">3 × 1'</div>
+<div class="desc" id="desc">Séance à faire maintenant</div>
+<button id="done">✓ Séance terminée</button>
+<button class="secondary" id="reset">Réinitialiser</button>
+</section>
+
+<section class="card">
+<div class="eyebrow">PARCOURS</div><div class="list" id="list"></div>
+</section>
+</main>
+<script>
+const sessions = [
+"3 × 1'","2 × 1'30","REPOS","2 × 1'30","3 × 1'30",
+"3 × 1'30","2 × 2'","2 × 2'","REPOS","3 × 2'",
+"4 × 2'","3 × 2'30","REPOS","3 × 2'30","2 × 3'",
+"2 × 3'","REPOS","3 × 3'","5 × 2'","4 × 2'30",
+"3 × 3'","2 × 3'30","REPOS","5 × 3'30","6 × 2'",
+"1 × 4'","4 × 3'30","5 × 3'","REPOS","4 × 4'",
+"1 × 4'30","1 × 5'","REPOS","2 × 5'","1 × 7'"
+];
+let done = Number(localStorage.getItem("abdosCompleted") || 0);
+const $=id=>document.getElementById(id);
+function render(){
+ const finished=Math.min(done,35), pct=Math.round(finished/35*100);
+ $("count").textContent=`${finished} / 35 séances`;
+ $("pct").textContent=`${pct} %`; $("bar").style.width=pct+"%";
+ if(finished>=35){
+   $("day").textContent="PROGRAMME TERMINÉ";$("workout").textContent="🎉";
+   $("desc").textContent="Les 35 étapes sont validées.";
+   $("done").textContent="Programme terminé";$("done").disabled=true;
+ }else{
+   const s=sessions[finished];$("day").textContent=`JOUR ${finished+1}`;
+   $("workout").textContent=s;$("desc").textContent=s==="REPOS"?"Aujourd’hui : récupération":"Séance à faire maintenant";
+   $("done").textContent=s==="REPOS"?"✓ Valider le repos":"✓ Séance terminée";$("done").disabled=false;
+ }
+ $("list").innerHTML=sessions.map((s,i)=>{
+   const n=i+1, state=n<=finished?"done":n===finished+1?"next":"future";
+   const icon=n<=finished?"✓":n===finished+1?"●":"○";
+   return `<div class="item ${state}"><span class="icon">${icon}</span><b>Jour ${n}</b><span>${s}</span>${n===finished+1?'<span class="badge">À FAIRE</span>':''}</div>`;
+ }).join("");
+}
+$("done").onclick=()=>{if(done<35){done++;localStorage.setItem("abdosCompleted",done);render()}};
+$("reset").onclick=()=>{if(confirm("Réinitialiser le programme ?")){done=0;localStorage.setItem("abdosCompleted",0);render()}};
+render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+}
+</script>
+</body>
+</html>

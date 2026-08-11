@@ -1,0 +1,16 @@
+{
+  "name": "Abdos Tracker",
+  "short_name": "Abdos",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "description": "Suivi séquentiel du programme abdos sur 35 jours.",
+  "icons": [
+    {"src":"icons/icon-180.png","sizes":"180x180","type":"image/png"},
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}
