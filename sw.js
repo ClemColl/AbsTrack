@@ -1,4 +1,4 @@
-const CACHE = "abdos-tracker-v1";
+const CACHE = "demon-tracker-v1";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-180.png", "./icons/icon-192.png", "./icons/icon-512.png"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
